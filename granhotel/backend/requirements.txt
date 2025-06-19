@@ -8,3 +8,5 @@ alembic
 python-dotenv # For .env file loading
 pytest
 httpx # For TestClient
+passlib[bcrypt]
+python-jose[cryptography]
