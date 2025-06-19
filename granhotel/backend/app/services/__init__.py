@@ -27,3 +27,14 @@ from .reservation_service import (
     update_reservation_details,
     cancel_reservation,
 ) # noqa
+from .user_service import (
+    get_user,
+    get_user_by_email,
+    get_users,
+    create_user,
+    update_user,
+    authenticate_user,
+    activate_user,
+    deactivate_user,
+    update_user_role,
+) # noqa
