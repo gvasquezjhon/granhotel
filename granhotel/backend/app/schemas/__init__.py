@@ -7,3 +7,12 @@ from .product import ( # noqa
     Product, ProductCreate, ProductUpdate, ProductBase as ProductBaseSchema,
     ProductCategory, ProductCategoryCreate, ProductCategoryUpdate, ProductCategoryBase as ProductCategoryBaseSchema
 )
+from .inventory import ( #noqa
+    Supplier, SupplierCreate, SupplierUpdate, SupplierBase as SupplierBaseSchema,
+    InventoryItem, InventoryItemCreate, InventoryItemUpdate, InventoryItemBase as InventoryItemBaseSchema, InventoryAdjustment,
+    PurchaseOrder, PurchaseOrderCreate, PurchaseOrderUpdate, PurchaseOrderBase as PurchaseOrderBaseSchema,
+    PurchaseOrderItem, PurchaseOrderItemCreate, PurchaseOrderItemUpdate, PurchaseOrderItemBase as PurchaseOrderItemBaseSchema, PurchaseOrderItemReceive,
+    StockMovement, StockMovementCreate, StockMovementBase as StockMovementBaseSchema,
+    PurchaseOrderStatus as PurchaseOrderStatusSchema,
+    StockMovementType as StockMovementTypeSchema
+)
