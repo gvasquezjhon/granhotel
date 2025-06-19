@@ -1,1 +1,2 @@
-from . import rooms # Make endpoints importable via this package.
+from . import rooms # noqa
+from . import guests # noqa, Add guests
