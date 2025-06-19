@@ -4,7 +4,10 @@ This project is a comprehensive hotel management system tailored for the Peruvia
 
 ## Project Status
 
-Currently, the initial backend for the **Room Management** module is under development.
+Currently, the backend includes:
+*   **Room Management Module:** CRUD operations, status tracking, etc.
+*   **Guest Management Module:** CRUD operations, Peruvian document types, blacklisting functionality.
+*   Localization settings for es-PE and America/Lima timezone.
 
 ## Prerequisites
 
@@ -35,6 +38,8 @@ Currently, the initial backend for the **Room Management** module is under devel
         *   `POSTGRES_DB`
         *   `DATABASE_URL` (this is typically constructed from the above, ensure it points to the `db` service name, e.g., `postgresql://user:pass@db:5432/dbname`)
         *   `CORS_ORIGINS`
+        *   `DEFAULT_LANGUAGE`
+        *   `TIMEZONE`
 
 3.  **Build and Run with Docker Compose:**
     *   Navigate back to the project root directory (`granhotel`):
@@ -55,11 +60,15 @@ Currently, the initial backend for the **Room Management** module is under devel
         ```bash
         docker-compose exec backend alembic upgrade head
         ```
+    *   *This will apply all migrations, including those for rooms and guests.*
 
 5.  **Accessing the API:**
     *   The backend API should now be accessible at `http://localhost:8000`.
     *   API documentation (Swagger UI) is available at `http://localhost:8000/docs`.
     *   ReDoc documentation is available at `http://localhost:8000/redoc`.
+    *   Available endpoint groups include:
+        *   `/api/v1/rooms/`
+        *   `/api/v1/guests/`
 
 6.  **Running Tests:**
     *   To run the backend unit and integration tests, execute the following command from the `granhotel` root directory:
@@ -79,9 +88,23 @@ Currently, the initial backend for the **Room Management** module is under devel
         docker-compose down -v
         ```
 
+## Implemented Modules (Backend)
+
+### Room Management
+*   **Models:** `Room` (with details like room_number, name, price, type, status, floor, building, timestamps).
+*   **API Endpoints:** Full CRUD operations available under `/api/v1/rooms/`.
+*   **Features:** Timezone-aware timestamps.
+
+### Guest Management
+*   **Models:** `Guest` (with details like name, document type (DNI, RUC, Passport, CE), document number, email, phone, address, nationality, preferences, blacklist status, timestamps).
+*   **API Endpoints:** Full CRUD operations and blacklist toggle available under `/api/v1/guests/`.
+*   **Features:** Peruvian document type enum, default country/nationality to Perú/Peruana, timezone-aware timestamps, basic validation for email and document numbers. Blacklist functionality. Filtering options on list retrieval.
+
 ## Next Steps
 *   Frontend setup and development.
-*   Implementation of other core modules.
+*   Implementation of other core modules (e.g., Reservations, Billing).
+*   Enhanced validation and business logic for existing modules.
+*   User authentication and authorization.
 
 ---
 *This README will be updated as the project progresses.*
