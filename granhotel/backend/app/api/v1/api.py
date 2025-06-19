@@ -3,7 +3,8 @@ from app.api.v1.endpoints import (
     auth, users, rooms, guests, reservations,
     product_categories, products,
     suppliers, inventory_stock, purchase_orders,
-    housekeeping # Add housekeeping
+    housekeeping,
+    pos # Add pos
 )
 
 api_router = APIRouter()
@@ -24,3 +25,4 @@ api_router.include_router(products.router, prefix="/products", tags=["Products"]
 api_router.include_router(suppliers.router, prefix="/suppliers", tags=["Suppliers"])
 api_router.include_router(inventory_stock.router, prefix="/inventory-stock", tags=["Inventory Stock Management"])
 api_router.include_router(purchase_orders.router, prefix="/purchase-orders", tags=["Purchase Orders"])
+api_router.include_router(pos.router, prefix="/pos", tags=["Point of Sale"])

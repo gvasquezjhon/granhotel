@@ -14,11 +14,18 @@ from .inventory import ( #noqa
     PurchaseOrderItem, PurchaseOrderItemCreate, PurchaseOrderItemUpdate, PurchaseOrderItemBase as PurchaseOrderItemBaseSchema, PurchaseOrderItemReceive,
     StockMovement, StockMovementCreate, StockMovementBase as StockMovementBaseSchema,
     PurchaseOrderStatus as PurchaseOrderStatusSchema,
-    StockMovementType as StockMovementTypeSchema
+    StockMovementType as StockMovementTypeSchema,
+    InventoryItemLowStockThresholdUpdate # Added this missing export from previous step
 )
 from .housekeeping import ( #noqa
     HousekeepingLog, HousekeepingLogCreate, HousekeepingLogUpdate, HousekeepingLogBase as HousekeepingLogBaseSchema,
     HousekeepingLogStatusUpdate, HousekeepingLogAssignmentUpdate,
     HousekeepingTaskType as HousekeepingTaskTypeSchema,
     HousekeepingStatus as HousekeepingStatusSchema
+)
+from .pos import ( #noqa
+    POSSale, POSSaleCreate, POSSaleUpdate, POSSaleVoid, POSSaleBase as POSSaleBaseSchema,
+    POSSaleItem, POSSaleItemCreate, POSSaleItemBase as POSSaleItemBaseSchema,
+    PaymentMethod as PaymentMethodSchema,
+    POSSaleStatus as POSSaleStatusSchema
 )
