@@ -8,3 +8,4 @@ from . import products
 from . import suppliers
 from . import inventory_stock
 from . import purchase_orders
+from . import housekeeping

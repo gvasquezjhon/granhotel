@@ -7,3 +7,6 @@ from .inventory import ( #noqa
     Supplier, InventoryItem, PurchaseOrder, PurchaseOrderItem, StockMovement,
     PurchaseOrderStatus, StockMovementType
 )
+from .housekeeping import ( #noqa
+    HousekeepingLog, HousekeepingTaskType, HousekeepingStatus
+)

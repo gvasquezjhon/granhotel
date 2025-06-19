@@ -10,7 +10,8 @@ Currently, the backend includes:
 *   Reservation System Module
 *   User Management & JWT Authentication Module
 *   Product Management Module
-*   **Inventory Management Module** (Suppliers, Stock Tracking, Purchase Orders)
+*   Inventory Management Module
+*   **Housekeeping Module** (Task scheduling, assignment, status tracking)
 *   Localization settings (es-PE, America/Lima)
 
 ## Prerequisites
@@ -64,7 +65,7 @@ Currently, the backend includes:
         ```bash
         docker-compose exec backend alembic upgrade head
         ```
-    *   *This will apply all migrations, including those for rooms, guests, reservations, users, products, product categories, and all inventory tables (suppliers, inventory_items, purchase_orders, etc.).*
+    *   *This will apply all migrations, including those for rooms, guests, reservations, users, products, product categories, inventory tables, and housekeeping logs.*
 
 5.  **Accessing the API:**
     *   The backend API should now be accessible at `http://localhost:8000`.
@@ -81,6 +82,7 @@ Currently, the backend includes:
         *   `/api/v1/suppliers/`
         *   `/api/v1/inventory-stock/`
         *   `/api/v1/purchase-orders/`
+        *   `/api/v1/housekeeping/` (with sub-routes like `/logs/`)
 
 6.  **Running Tests:**
     *   To run the backend unit and integration tests, execute the following command from the `granhotel` root directory:
@@ -174,15 +176,33 @@ Currently, the backend includes:
         *   `POST /{po_id}/items/{po_item_id}/receive`: Record received items against a PO, which automatically updates product stock levels and PO status.
 *   **Features:** Real-time stock tracking (via `InventoryItem` updates), audit trail for all stock changes (`StockMovement`), linkage between purchase order receipts and stock increases. Role-based access control for sensitive operations.
 
+### Housekeeping Module
+*   **Core Functionality:** Manages room cleaning schedules, assignments to housekeeping staff, and tracks the status of cleaning/maintenance tasks.
+*   **Models:**
+    *   `HousekeepingLog`: Records tasks with details like `room_id`, `assigned_to_user_id` (housekeeper), `task_type` (e.g., Full Clean, Turndown), `status` (e.g., Pending, In Progress, Completed), `scheduled_date`, `notes`, and audit timestamps/user IDs.
+    *   Enums for `HousekeepingTaskType` and `HousekeepingStatus`.
+*   **API Endpoints (under `/api/v1/housekeeping/`):**
+    *   `/logs/`:
+        *   `POST /`: Create new housekeeping tasks (Manager/Admin).
+        *   `GET /`: List all tasks with filters (room, staff, status, date) (Manager/Admin).
+    *   `/logs/staff/me`: View tasks assigned to the current logged-in housekeeper.
+    *   `/logs/room/{room_id}`: View tasks for a specific room (Manager/Admin).
+    *   `/logs/{log_id}`:
+        *   `GET /`: Get details of a specific task. (Assigned staff or Manager/Admin).
+        *   `PUT /`: Update task details (Manager/Admin).
+        *   `PATCH /status`: Update task status (Assigned staff for allowed transitions, or Manager/Admin).
+        *   `PATCH /assign`: Assign/reassign task to staff (Manager/Admin).
+*   **Features:** Task assignment to specific housekeepers (User model with HOUSEKEEPER role). Tracking of task lifecycle via statuses. Audit trails for task creation and updates. Role-based access for managing and performing tasks.
+
 ## Dependencies Added
 *   `passlib[bcrypt]`: For password hashing.
 *   `python-jose[cryptography]`: For JWT creation, signing, and validation.
-    *(No new major dependencies for Inventory Management itself, uses existing stack)*
+    *(No new major dependencies for Housekeeping itself, uses existing stack)*
 
 ## Next Steps
 *   Frontend setup and development.
-*   Implementation of other core modules (e.g., Billing/Point of Sale).
-*   Enhanced validation, business logic, and features for existing modules (e.g., detailed room availability calendar, advanced pricing rules, notifications for reservations, inventory tracking reports).
+*   Implementation of other core modules (e.g., Billing/Point of Sale, Reporting & Analytics).
+*   Enhanced validation, business logic, and features for existing modules (e.g., detailed room availability calendar, advanced pricing rules, notifications for reservations and tasks, inventory tracking reports).
 *   Further refinement of user roles and permissions.
 
 ---

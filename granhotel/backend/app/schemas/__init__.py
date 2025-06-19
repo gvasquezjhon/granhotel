@@ -16,3 +16,9 @@ from .inventory import ( #noqa
     PurchaseOrderStatus as PurchaseOrderStatusSchema,
     StockMovementType as StockMovementTypeSchema
 )
+from .housekeeping import ( #noqa
+    HousekeepingLog, HousekeepingLogCreate, HousekeepingLogUpdate, HousekeepingLogBase as HousekeepingLogBaseSchema,
+    HousekeepingLogStatusUpdate, HousekeepingLogAssignmentUpdate,
+    HousekeepingTaskType as HousekeepingTaskTypeSchema,
+    HousekeepingStatus as HousekeepingStatusSchema
+)
