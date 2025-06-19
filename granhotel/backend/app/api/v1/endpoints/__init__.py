@@ -10,3 +10,4 @@ from . import inventory_stock
 from . import purchase_orders
 from . import housekeeping
 from . import pos
+from . import billing

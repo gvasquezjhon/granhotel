@@ -13,3 +13,6 @@ from .housekeeping import ( #noqa
 from .pos import ( #noqa
     POSSale, POSSaleItem, PaymentMethod, POSSaleStatus
 )
+from .billing import ( #noqa
+    GuestFolio, FolioTransaction, FolioStatus, FolioTransactionType
+)

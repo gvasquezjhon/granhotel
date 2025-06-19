@@ -15,7 +15,7 @@ from .inventory import ( #noqa
     StockMovement, StockMovementCreate, StockMovementBase as StockMovementBaseSchema,
     PurchaseOrderStatus as PurchaseOrderStatusSchema,
     StockMovementType as StockMovementTypeSchema,
-    InventoryItemLowStockThresholdUpdate # Added this missing export from previous step
+    InventoryItemLowStockThresholdUpdate
 )
 from .housekeeping import ( #noqa
     HousekeepingLog, HousekeepingLogCreate, HousekeepingLogUpdate, HousekeepingLogBase as HousekeepingLogBaseSchema,
@@ -28,4 +28,10 @@ from .pos import ( #noqa
     POSSaleItem, POSSaleItemCreate, POSSaleItemBase as POSSaleItemBaseSchema,
     PaymentMethod as PaymentMethodSchema,
     POSSaleStatus as POSSaleStatusSchema
+)
+from .billing import ( #noqa
+    GuestFolio, GuestFolioCreate, GuestFolioUpdate, GuestFolioBase as GuestFolioBaseSchema,
+    FolioTransaction, FolioTransactionCreate, FolioTransactionBase as FolioTransactionBaseSchema,
+    FolioStatus as FolioStatusSchema,
+    FolioTransactionType as FolioTransactionTypeSchema
 )
