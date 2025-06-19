@@ -5,10 +5,11 @@ This project is a comprehensive hotel management system tailored for the Peruvia
 ## Project Status
 
 Currently, the backend includes:
-*   **Room Management Module:** CRUD operations, status tracking, etc.
-*   **Guest Management Module:** CRUD operations, Peruvian document types, blacklisting functionality.
-*   **Reservation System Module:** Creation, updates, cancellation, status management, room availability checks.
-*   Localization settings for es-PE and America/Lima timezone.
+*   Room Management Module
+*   Guest Management Module
+*   Reservation System Module
+*   **User Management & JWT Authentication Module**
+*   Localization settings (es-PE, America/Lima)
 
 ## Prerequisites
 
@@ -34,13 +35,13 @@ Currently, the backend includes:
         ```
         *(Note: If `.env.example` is not present in your version, you can manually create `.env` and populate it based on the structure of `.env.example` shown in documentation or previous setup steps. The `.env` file created in earlier steps can also be used directly if available).*
     *   Review and update the variables in `backend/.env` as needed. Key variables include:
-        *   `POSTGRES_USER`
-        *   `POSTGRES_PASSWORD`
-        *   `POSTGRES_DB`
-        *   `DATABASE_URL` (this is typically constructed from the above, ensure it points to the `db` service name, e.g., `postgresql://user:pass@db:5432/dbname`)
-        *   `CORS_ORIGINS`
-        *   `DEFAULT_LANGUAGE`
-        *   `TIMEZONE`
+        *   `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `DATABASE_URL`
+        *   `DEFAULT_LANGUAGE`, `TIMEZONE`
+        *   **`SECRET_KEY` (for JWT access tokens - IMPORTANT: Change for production)**
+        *   **`REFRESH_SECRET_KEY` (for JWT refresh tokens - IMPORTANT: Change for production)**
+        *   **`ALGORITHM` (e.g., HS256)**
+        *   **`ACCESS_TOKEN_EXPIRE_MINUTES`**
+        *   **`REFRESH_TOKEN_EXPIRE_DAYS`**
 
 3.  **Build and Run with Docker Compose:**
     *   Navigate back to the project root directory (`granhotel`):
@@ -61,13 +62,15 @@ Currently, the backend includes:
         ```bash
         docker-compose exec backend alembic upgrade head
         ```
-    *   *This will apply all migrations, including those for rooms, guests, and reservations.*
+    *   *This will apply all migrations, including those for rooms, guests, reservations, and users.*
 
 5.  **Accessing the API:**
     *   The backend API should now be accessible at `http://localhost:8000`.
     *   API documentation (Swagger UI) is available at `http://localhost:8000/docs`.
     *   ReDoc documentation is available at `http://localhost:8000/redoc`.
     *   Available endpoint groups include:
+        *   `/api/v1/auth/` (for login, token refresh)
+        *   `/api/v1/users/` (for user management, protected)
         *   `/api/v1/rooms/`
         *   `/api/v1/guests/`
         *   `/api/v1/reservations/`
@@ -113,11 +116,32 @@ Currently, the backend includes:
     *   `POST /{id}/cancel`: Cancel a reservation.
 *   **Features:** Room availability checks, basic price calculation (room rate * nights), management of reservation lifecycle through statuses. Blacklisted guests cannot make reservations. Rich reservation objects in responses including guest and room details.
 
+### User Management & Authentication
+*   **Models:** `User` (UUID PK, email, hashed_password, first_name, last_name, role, is_active), `UserRole` enum (Admin, Manager, Receptionist, Housekeeper).
+*   **Security:** Passwords hashed using bcrypt. JWT (JSON Web Tokens) for API authentication using `python-jose`. Access and Refresh token strategy.
+*   **API Endpoints:**
+    *   `/api/v1/auth/login`: Authenticate user (email/password) and receive access/refresh tokens.
+    *   `/api/v1/auth/refresh`: Obtain a new access token using a refresh token.
+    *   `/api/v1/users/`: Endpoints for user management (CRUD-like operations).
+        *   `POST /`: Create new users (Admin access).
+        *   `GET /me`: Get current authenticated user's details.
+        *   `PUT /me`: Update current user's details.
+        *   `GET /`: List all users (Admin access).
+        *   `GET /{user_id}`: Get user by ID (Admin or Manager access).
+        *   `PUT /{user_id}`: Update user by ID (Admin access).
+        *   `PATCH /{user_id}/activate` & `deactivate`: Manage user active status (Admin access).
+        *   `PATCH /{user_id}/role`: Manage user role (Admin access).
+*   **Features:** Role-based access control (RBAC) implemented for user management endpoints. Secure password storage. Token-based authentication for accessing protected resources.
+
+## Dependencies Added
+*   `passlib[bcrypt]`: For password hashing.
+*   `python-jose[cryptography]`: For JWT creation, signing, and validation.
+
 ## Next Steps
 *   Frontend setup and development.
-*   Implementation of other core modules (e.g., Billing, User Management & Authentication).
-*   Enhanced validation, business logic, and features for existing modules (e.g., detailed room availability calendar, advanced pricing rules, IGV calculation, notifications).
-*   User authentication and authorization for API endpoints.
+*   Implementation of other core modules (e.g., Billing).
+*   Enhanced validation, business logic, and features for existing modules (e.g., detailed room availability calendar, advanced pricing rules, IGV calculation, notifications for reservations).
+*   Further refinement of user roles and permissions.
 
 ---
 *This README will be updated as the project progresses.*
