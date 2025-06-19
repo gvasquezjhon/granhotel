@@ -76,3 +76,11 @@ from .pos_service import ( #noqa
     get_pos_sales,
     void_pos_sale,
 )
+from .billing_service import ( #noqa
+    get_or_create_folio_for_guest,
+    add_transaction_to_folio,
+    get_folio_details,
+    get_folios_for_guest,
+    update_folio_status,
+    _recalculate_and_save_folio_totals # Exporting for potential direct use or testing, though typically internal
+)

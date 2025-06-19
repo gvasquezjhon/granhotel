@@ -47,7 +47,16 @@ try:
 except ImportError: # pragma: no cover
     pass
 
-from .pos import ( #noqa
-    create_pos_sale_items_data_for_api,
-    create_random_pos_sale
+try:
+    from .pos import ( #noqa
+        create_pos_sale_items_data_for_api,
+        create_random_pos_sale
+    )
+except ImportError: # pragma: no cover
+    pass
+
+from .billing import ( #noqa
+    create_random_folio_transaction_data,
+    create_random_guest_folio,
+    add_sample_transactions_to_folio
 )
