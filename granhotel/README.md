@@ -7,6 +7,7 @@ This project is a comprehensive hotel management system tailored for the Peruvia
 Currently, the backend includes:
 *   **Room Management Module:** CRUD operations, status tracking, etc.
 *   **Guest Management Module:** CRUD operations, Peruvian document types, blacklisting functionality.
+*   **Reservation System Module:** Creation, updates, cancellation, status management, room availability checks.
 *   Localization settings for es-PE and America/Lima timezone.
 
 ## Prerequisites
@@ -60,7 +61,7 @@ Currently, the backend includes:
         ```bash
         docker-compose exec backend alembic upgrade head
         ```
-    *   *This will apply all migrations, including those for rooms and guests.*
+    *   *This will apply all migrations, including those for rooms, guests, and reservations.*
 
 5.  **Accessing the API:**
     *   The backend API should now be accessible at `http://localhost:8000`.
@@ -69,6 +70,7 @@ Currently, the backend includes:
     *   Available endpoint groups include:
         *   `/api/v1/rooms/`
         *   `/api/v1/guests/`
+        *   `/api/v1/reservations/`
 
 6.  **Running Tests:**
     *   To run the backend unit and integration tests, execute the following command from the `granhotel` root directory:
@@ -100,11 +102,22 @@ Currently, the backend includes:
 *   **API Endpoints:** Full CRUD operations and blacklist toggle available under `/api/v1/guests/`.
 *   **Features:** Peruvian document type enum, default country/nationality to Perú/Peruana, timezone-aware timestamps, basic validation for email and document numbers. Blacklist functionality. Filtering options on list retrieval.
 
+### Reservation System
+*   **Models:** `Reservation` (linking `Guest` and `Room`), `ReservationStatus` enum (Pending, Confirmed, Checked-In, Checked-Out, Cancelled, No-Show, Waitlist). Includes dates, calculated total price, notes, and timezone-aware timestamps.
+*   **API Endpoints:** Full CRUD-like operations available under `/api/v1/reservations/`.
+    *   `POST /`: Create a new reservation.
+    *   `GET /`: List reservations with filters (guest, room, status, date range).
+    *   `GET /{id}`: Retrieve a specific reservation.
+    *   `PUT /{id}`: Update reservation details (dates, room, notes; re-checks availability and price).
+    *   `PATCH /{id}/status`: Update reservation status.
+    *   `POST /{id}/cancel`: Cancel a reservation.
+*   **Features:** Room availability checks, basic price calculation (room rate * nights), management of reservation lifecycle through statuses. Blacklisted guests cannot make reservations. Rich reservation objects in responses including guest and room details.
+
 ## Next Steps
 *   Frontend setup and development.
-*   Implementation of other core modules (e.g., Reservations, Billing).
-*   Enhanced validation and business logic for existing modules.
-*   User authentication and authorization.
+*   Implementation of other core modules (e.g., Billing, User Management & Authentication).
+*   Enhanced validation, business logic, and features for existing modules (e.g., detailed room availability calendar, advanced pricing rules, IGV calculation, notifications).
+*   User authentication and authorization for API endpoints.
 
 ---
 *This README will be updated as the project progresses.*
