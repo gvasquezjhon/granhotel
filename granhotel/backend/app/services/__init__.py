@@ -38,3 +38,8 @@ from .user_service import (
     deactivate_user,
     update_user_role,
 ) # noqa
+from .product_service import ( #noqa
+    create_product_category, get_product_category, get_all_product_categories, update_product_category, delete_product_category,
+    create_product, get_product, get_products, update_product, delete_product,
+    calculate_product_price_with_tax, get_product_price_details, IGV_RATE
+)

@@ -8,7 +8,8 @@ Currently, the backend includes:
 *   Room Management Module
 *   Guest Management Module
 *   Reservation System Module
-*   **User Management & JWT Authentication Module**
+*   User Management & JWT Authentication Module
+*   **Product Management Module** (products and categories, pricing with tax)
 *   Localization settings (es-PE, America/Lima)
 
 ## Prerequisites
@@ -37,11 +38,11 @@ Currently, the backend includes:
     *   Review and update the variables in `backend/.env` as needed. Key variables include:
         *   `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `DATABASE_URL`
         *   `DEFAULT_LANGUAGE`, `TIMEZONE`
-        *   **`SECRET_KEY` (for JWT access tokens - IMPORTANT: Change for production)**
-        *   **`REFRESH_SECRET_KEY` (for JWT refresh tokens - IMPORTANT: Change for production)**
-        *   **`ALGORITHM` (e.g., HS256)**
-        *   **`ACCESS_TOKEN_EXPIRE_MINUTES`**
-        *   **`REFRESH_TOKEN_EXPIRE_DAYS`**
+        *   `SECRET_KEY` (for JWT access tokens - IMPORTANT: Change for production)
+        *   `REFRESH_SECRET_KEY` (for JWT refresh tokens - IMPORTANT: Change for production)
+        *   `ALGORITHM` (e.g., HS256)
+        *   `ACCESS_TOKEN_EXPIRE_MINUTES`
+        *   `REFRESH_TOKEN_EXPIRE_DAYS`
 
 3.  **Build and Run with Docker Compose:**
     *   Navigate back to the project root directory (`granhotel`):
@@ -62,18 +63,20 @@ Currently, the backend includes:
         ```bash
         docker-compose exec backend alembic upgrade head
         ```
-    *   *This will apply all migrations, including those for rooms, guests, reservations, and users.*
+    *   *This will apply all migrations, including those for rooms, guests, reservations, users, products, and product categories.*
 
 5.  **Accessing the API:**
     *   The backend API should now be accessible at `http://localhost:8000`.
     *   API documentation (Swagger UI) is available at `http://localhost:8000/docs`.
     *   ReDoc documentation is available at `http://localhost:8000/redoc`.
     *   Available endpoint groups include:
-        *   `/api/v1/auth/` (for login, token refresh)
-        *   `/api/v1/users/` (for user management, protected)
+        *   `/api/v1/auth/`
+        *   `/api/v1/users/`
         *   `/api/v1/rooms/`
         *   `/api/v1/guests/`
         *   `/api/v1/reservations/`
+        *   `/api/v1/product-categories/`
+        *   `/api/v1/products/`
 
 6.  **Running Tests:**
     *   To run the backend unit and integration tests, execute the following command from the `granhotel` root directory:
@@ -133,14 +136,26 @@ Currently, the backend includes:
         *   `PATCH /{user_id}/role`: Manage user role (Admin access).
 *   **Features:** Role-based access control (RBAC) implemented for user management endpoints. Secure password storage. Token-based authentication for accessing protected resources.
 
+### Product Management
+*   **Models:**
+    *   `ProductCategory` (name, description).
+    *   `Product` (name, description, price (Numeric), SKU, image URL, active/taxable status, relationship to `ProductCategory`).
+*   **API Endpoints:**
+    *   `/api/v1/product-categories/`: CRUD operations for product categories. (Creation/Update/Deletion typically Manager/Admin restricted).
+    *   `/api/v1/products/`: CRUD operations for products. (Creation/Update/Deletion typically Manager/Admin restricted).
+        *   Includes filtering by category, name, active status, taxable status.
+        *   `GET /{product_id}/price-details`: Endpoint to get calculated price for a product quantity, including IGV (18%) if applicable.
+*   **Features:** Management of a product catalog with categories. Precise price handling using `Numeric` type. Calculation of prices including Peruvian IGV. Role-based access control for managing products and categories.
+
 ## Dependencies Added
 *   `passlib[bcrypt]`: For password hashing.
 *   `python-jose[cryptography]`: For JWT creation, signing, and validation.
+    *(No new major dependencies for Product Management itself, uses existing stack)*
 
 ## Next Steps
 *   Frontend setup and development.
-*   Implementation of other core modules (e.g., Billing).
-*   Enhanced validation, business logic, and features for existing modules (e.g., detailed room availability calendar, advanced pricing rules, IGV calculation, notifications for reservations).
+*   Implementation of other core modules (e.g., Billing/Point of Sale, Inventory for products).
+*   Enhanced validation, business logic, and features for existing modules (e.g., detailed room availability calendar, advanced pricing rules, notifications for reservations, inventory tracking).
 *   Further refinement of user roles and permissions.
 
 ---
