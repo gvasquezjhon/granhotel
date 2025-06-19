@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/app:/usr/src/app/app # Mount the app directory for live reloading
+      - ./backend/alembic:/usr/src/app/alembic
+      - ./backend/alembic.ini:/usr/src/app/alembic.ini
+      # If you have other top-level files in backend that app needs, mount them too
+    env_file:
+      - ./backend/.env # Load environment variables from .env file in backend
+    environment:
+      # DATABASE_URL is expected to be in the .env file
+      # Example: DATABASE_URL=postgresql://gran_hotel_user:strong_password@db/granhoteldb
+      PYTHONUNBUFFERED: 1 # Already in Dockerfile, but can be reinforced here
+      PYTHONDONTWRITEBYTECODE: 1 # Same as above
+    depends_on:
+      db:
+        condition: service_healthy # Wait for db to be healthy before starting backend
+    networks:
+      - granhotel_network
+
+  db:
+    image: postgres:13-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+      # Optional: Mount init scripts for initial DB setup
+      # - ./backend/db/init-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432" # Expose PostgreSQL port to host (optional, for direct access)
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-gran_hotel_user} # Use from .env or default
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-strong_password} # Use from .env or default
+      POSTGRES_DB: ${POSTGRES_DB:-granhoteldb} # Use from .env or default
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-gran_hotel_user} -d ${POSTGRES_DB:-granhoteldb}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - granhotel_network
+
+volumes:
+  postgres_data: # Persists database data across container restarts
+
+networks:
+  granhotel_network:
+    driver: bridge

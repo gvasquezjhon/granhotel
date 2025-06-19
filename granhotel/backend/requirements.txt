@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+psycopg2-binary
+pydantic
+pydantic-settings # For config
+alembic
+python-dotenv # For .env file loading
+pytest
+httpx # For TestClient
