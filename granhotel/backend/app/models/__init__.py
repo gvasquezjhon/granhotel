@@ -2,3 +2,8 @@ from .room import Room  # noqa
 from .guest import Guest, DocumentType # noqa
 from .reservation import Reservation, ReservationStatus # noqa
 from .user import User, UserRole # noqa
+from .product import Product, ProductCategory # noqa
+from .inventory import ( #noqa
+    Supplier, InventoryItem, PurchaseOrder, PurchaseOrderItem, StockMovement,
+    PurchaseOrderStatus, StockMovementType
+)
