@@ -11,7 +11,8 @@ Currently, the backend includes:
 *   User Management & JWT Authentication Module
 *   Product Management Module
 *   Inventory Management Module
-*   **Housekeeping Module** (Task scheduling, assignment, status tracking)
+*   Housekeeping Module
+*   **Point of Sale (POS) Module** (Sales transactions, inventory integration)
 *   Localization settings (es-PE, America/Lima)
 
 ## Prerequisites
@@ -65,7 +66,7 @@ Currently, the backend includes:
         ```bash
         docker-compose exec backend alembic upgrade head
         ```
-    *   *This will apply all migrations, including those for rooms, guests, reservations, users, products, product categories, inventory tables, and housekeeping logs.*
+    *   *This will apply all migrations, including those for rooms, guests, reservations, users, products, product categories, inventory tables, housekeeping logs, and POS tables (sales, sale items).*
 
 5.  **Accessing the API:**
     *   The backend API should now be accessible at `http://localhost:8000`.
@@ -82,7 +83,8 @@ Currently, the backend includes:
         *   `/api/v1/suppliers/`
         *   `/api/v1/inventory-stock/`
         *   `/api/v1/purchase-orders/`
-        *   `/api/v1/housekeeping/` (with sub-routes like `/logs/`)
+        *   `/api/v1/housekeeping/`
+        *   `/api/v1/pos/` (with sub-routes like `/sales/`)
 
 6.  **Running Tests:**
     *   To run the backend unit and integration tests, execute the following command from the `granhotel` root directory:
@@ -194,15 +196,29 @@ Currently, the backend includes:
         *   `PATCH /assign`: Assign/reassign task to staff (Manager/Admin).
 *   **Features:** Task assignment to specific housekeepers (User model with HOUSEKEEPER role). Tracking of task lifecycle via statuses. Audit trails for task creation and updates. Role-based access for managing and performing tasks.
 
+### Point of Sale (POS) Module
+*   **Core Functionality:** Enables processing of sales transactions for products and services, calculating totals with applicable taxes, and updating inventory levels in real-time.
+*   **Models:**
+    *   `POSSale`: Records overall sale information including cashier, guest (optional), payment details (method, reference), calculated totals (before tax, tax, after tax), and status (Completed, Voided, etc.).
+    *   `POSSaleItem`: Details each item sold within a sale, including product, quantity, and price/tax information at the time of sale for historical accuracy.
+    *   Enums for `PaymentMethod` (Cash, Card, Yape, Plin, Room Charge, etc.) and `POSSaleStatus`.
+*   **API Endpoints (under `/api/v1/pos/`):**
+    *   `/sales/`:
+        *   `POST /`: Create a new sales transaction. Accepts a list of items (product_id, quantity), payment method, and optional guest ID. Calculates totals, applies taxes (IGV 18%), and deducts sold items from inventory. (Accessible by Receptionist, Manager, Admin).
+        *   `GET /`: List all sales transactions with filters (e.g., date range, cashier, guest, status). (Manager/Admin access).
+        *   `GET /{sale_id}`: Retrieve details of a specific sale, including all items and related information. (Cashier for own sales, Manager/Admin for any).
+        *   `POST /{sale_id}/void`: Void a completed sale. Records reason and voiding user. (Manager/Admin access).
+*   **Features:** Real-time inventory deduction upon sale. Accurate price and tax (Peruvian IGV 18%) calculation at the item and sale level. Tracking of sales by cashier and optionally by guest. Support for various payment methods including Peruvian specifics. Role-based access for creating and managing sales.
+
 ## Dependencies Added
 *   `passlib[bcrypt]`: For password hashing.
 *   `python-jose[cryptography]`: For JWT creation, signing, and validation.
-    *(No new major dependencies for Housekeeping itself, uses existing stack)*
+    *(No new major dependencies for POS module itself, uses existing stack)*
 
 ## Next Steps
 *   Frontend setup and development.
-*   Implementation of other core modules (e.g., Billing/Point of Sale, Reporting & Analytics).
-*   Enhanced validation, business logic, and features for existing modules (e.g., detailed room availability calendar, advanced pricing rules, notifications for reservations and tasks, inventory tracking reports).
+*   Implementation of other core modules (e.g., Billing/Folio Management, Reporting & Analytics).
+*   Enhanced validation, business logic, and features for existing modules (e.g., detailed room availability calendar, advanced pricing rules, notifications for reservations and tasks, inventory tracking reports, POS returns/refunds, linking POS to reservations/folios).
 *   Further refinement of user roles and permissions.
 
 ---

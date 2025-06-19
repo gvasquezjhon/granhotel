@@ -10,3 +10,6 @@ from .inventory import ( #noqa
 from .housekeeping import ( #noqa
     HousekeepingLog, HousekeepingTaskType, HousekeepingStatus
 )
+from .pos import ( #noqa
+    POSSale, POSSaleItem, PaymentMethod, POSSaleStatus
+)

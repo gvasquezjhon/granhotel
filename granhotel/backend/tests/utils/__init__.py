@@ -38,8 +38,16 @@ try:
 except ImportError: # pragma: no cover
     pass
 
-from .housekeeping import ( #noqa
-    create_random_housekeeper,
-    create_random_housekeeping_log_data,
-    create_random_housekeeping_log
+try:
+    from .housekeeping import ( #noqa
+        create_random_housekeeper,
+        create_random_housekeeping_log_data,
+        create_random_housekeeping_log
+    )
+except ImportError: # pragma: no cover
+    pass
+
+from .pos import ( #noqa
+    create_pos_sale_items_data_for_api,
+    create_random_pos_sale
 )
