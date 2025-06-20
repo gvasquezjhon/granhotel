@@ -20,6 +20,12 @@ import CreateGuestPage from './pages/dashboard/CreateGuestPage';
 import GuestDetailPage from './pages/dashboard/GuestDetailPage';
 import EditGuestPage from './pages/dashboard/EditGuestPage';
 
+// Reservation System Pages
+import ReservationsPage from './pages/dashboard/ReservationsPage';
+import CreateReservationPage from './pages/dashboard/CreateReservationPage';
+import ReservationDetailPage from './pages/dashboard/ReservationDetailPage';
+import EditReservationPage from './pages/dashboard/EditReservationPage';
+
 
 const ProtectedRoute: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -58,15 +64,13 @@ const App: React.FC = () => {
       <Route path="/dashboard" element={<ProtectedRoute />}>
         <Route index element={<DashboardPage />} />
 
-        {/* Room Management Routes */}
-        <Route path="rooms">
+        <Route path="rooms"> {/* No element needed on parent if it just provides Outlet context */}
           <Route index element={<RoomsPage />} />
           <Route path="new" element={<CreateRoomPage />} />
           <Route path=":roomId/view" element={<RoomDetailPage />} />
           <Route path=":roomId/edit" element={<EditRoomPage />} />
         </Route>
 
-        {/* Guest Management Routes */}
         <Route path="guests">
           <Route index element={<GuestsPage />} />
           <Route path="new" element={<CreateGuestPage />} />
@@ -74,8 +78,15 @@ const App: React.FC = () => {
           <Route path=":guestId/edit" element={<EditGuestPage />} />
         </Route>
 
+        <Route path="reservations">
+          <Route index element={<ReservationsPage />} />
+          <Route path="new" element={<CreateReservationPage />} />
+          <Route path=":reservationId/view" element={<ReservationDetailPage />} />
+          <Route path=":reservationId/edit" element={<EditReservationPage />} />
+        </Route>
+
         {/* Placeholder for other dashboard sections */}
-        {/* <Route path="reservations" element={<ReservationsPage />} /> */}
+        {/* <Route path="products" element={<ProductsPage />} /> */}
       </Route>
 
       <Route
