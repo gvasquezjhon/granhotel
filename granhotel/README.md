@@ -13,7 +13,8 @@ Currently, the backend includes:
 *   Inventory Management Module
 *   Housekeeping Module
 *   Point of Sale (POS) Module
-*   **Billing & Guest Folio Management Module** (Consolidates charges, manages payments)
+*   Billing & Guest Folio Management Module
+*   **Reporting & Analytics Module** (Occupancy, Sales, Inventory, Financial Summaries)
 *   Localization settings (es-PE, America/Lima)
 
 ## Prerequisites
@@ -67,7 +68,7 @@ Currently, the backend includes:
         ```bash
         docker-compose exec backend alembic upgrade head
         ```
-    *   *This will apply all migrations, including those for rooms, guests, reservations, users, products, product categories, inventory tables, housekeeping logs, and billing/folio tables.*
+    *   *This applies all migrations. No new tables were added for the reporting module itself as it reads existing data.*
 
 5.  **Accessing the API:**
     *   The backend API should now be accessible at `http://localhost:8000`.
@@ -85,7 +86,8 @@ Currently, the backend includes:
         *   `/api/v1/inventory-stock/`
         *   `/api/v1/purchase-orders/`
         *   `/api/v1/housekeeping/`
-        *   `/api/v1/billing/` (with sub-routes like `/folios/`)
+        *   `/api/v1/billing/`
+        *   `/api/v1/reports/` (New)
 
 6.  **Running Tests:**
     *   To run the backend unit and integration tests, execute the following command from the `granhotel` root directory:
@@ -211,17 +213,44 @@ Currently, the backend includes:
     *   `/folios/{folio_id}/status`: Update the status of a folio (e.g., to Close or Settle).
 *   **Features:** Centralized guest billing. Automatic recalculation of folio balances after new transactions. Management of folio lifecycle (Open, Closed, Settled). Validation for key operations (e.g., folio must be open for new transactions, balance must be zero to settle). Role-based access for managing folios and transactions. (Future: Automatic posting of room charges, POS room charges to folio).
 
+### Point of Sale (POS) Module
+*   **Core Functionality:** Enables processing of sales transactions for products and services, calculating totals with applicable taxes, and updating inventory levels in real-time.
+*   **Models:**
+    *   `POSSale`: Records overall sale information including cashier, guest (optional), payment details (method, reference), calculated totals (before tax, tax, after tax), and status (Completed, Voided, etc.).
+    *   `POSSaleItem`: Details each item sold within a sale, including product, quantity, and price/tax information at the time of sale for historical accuracy.
+    *   Enums for `PaymentMethod` (Cash, Card, Yape, Plin, Room Charge, etc.) and `POSSaleStatus`.
+*   **API Endpoints (under `/api/v1/pos/`):**
+    *   `/sales/`:
+        *   `POST /`: Create a new sales transaction. Accepts a list of items (product_id, quantity), payment method, and optional guest ID. Calculates totals, applies taxes (IGV 18%), and deducts sold items from inventory. (Accessible by Receptionist, Manager, Admin).
+        *   `GET /`: List all sales transactions with filters (e.g., date range, cashier, guest, status). (Manager/Admin access).
+        *   `GET /{sale_id}`: Retrieve details of a specific sale, including all items and related information. (Cashier for own sales, Manager/Admin for any).
+        *   `POST /{sale_id}/void`: Void a completed sale. Records reason and voiding user. (Manager/Admin access).
+*   **Features:** Real-time inventory deduction upon sale. Accurate price and tax (Peruvian IGV 18%) calculation at the item and sale level. Tracking of sales by cashier and optionally by guest. Support for various payment methods including Peruvian specifics. Role-based access for creating and managing sales.
+
+### Reporting & Analytics Module
+*   **Core Functionality:** Provides access to key operational and financial reports by aggregating data from various modules.
+*   **API Endpoints (under `/api/v1/reports/` - Require Manager/Admin access):**
+        *   `/occupancy/daily?target_date=YYYY-MM-DD`: Daily occupancy metrics.
+        *   `/occupancy/period?date_from=...&date_to=...`: Occupancy metrics over a period.
+        *   `/occupancy/revpar?date_from=...&date_to=...`: Revenue Per Available Room over a period.
+        *   `/sales/summary-by-period?date_from=...&date_to=...[&payment_method=...]`: Summary of POS sales.
+        *   `/sales/by-product-category?date_from=...&date_to=...`: POS sales grouped by product category.
+        *   `/inventory/summary`: Current snapshot of inventory levels and values for active products.
+        *   `/financials/folio-summary?date_from=...&date_to=...`: Summary of total charges and payments from guest folios.
+*   **Features:** On-demand data aggregation for key performance indicators. Provides insights into occupancy, sales performance, inventory status, and basic financial summaries. Report data is structured using specific Pydantic schemas for clarity.
+*   **Note:** More advanced inventory reports like "Low Stock Items" and "Stock Movement History" are available under the `/inventory-stock/` endpoints.
+
 ## Dependencies Added
 *   `passlib[bcrypt]`: For password hashing.
 *   `python-jose[cryptography]`: For JWT creation, signing, and validation.
-    *(No new major dependencies for Billing/Folio module itself, uses existing stack)*
+    *(No new major dependencies for Reporting module itself, uses existing stack)*
 
 ## Next Steps
 *   Frontend setup and development.
-*   Implementation of a comprehensive Reporting & Analytics module.
+*   Implementation of a comprehensive Reporting & Analytics module (e.g. more advanced reports, dashboards, exports).
 *   Enhanced validation, business logic, and features for existing modules:
-    *   Room Management: Detailed room availability calendar, room features/amenities.
-    *   Reservation System: Advanced pricing rules (seasonal, promotional), group bookings, modification history.
+    *   Room Management: Room features/amenities, advanced pricing rules.
+    *   Reservation System: Group bookings, modification history, seasonal/promotional pricing.
     *   POS: Returns/refunds processing, direct linking of POS sales to guest folios for room charges.
     *   Inventory: Batch tracking, expiration dates for perishable goods, detailed inventory reports.
     *   Housekeeping: Automated task generation based on reservations, staff performance tracking.

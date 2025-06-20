@@ -15,7 +15,8 @@ from .inventory import ( #noqa
     StockMovement, StockMovementCreate, StockMovementBase as StockMovementBaseSchema,
     PurchaseOrderStatus as PurchaseOrderStatusSchema,
     StockMovementType as StockMovementTypeSchema,
-    InventoryItemLowStockThresholdUpdate
+    InventoryItemLowStockThresholdUpdate,
+    PurchaseOrderStatusUpdate # Added missing import from previous step
 )
 from .housekeeping import ( #noqa
     HousekeepingLog, HousekeepingLogCreate, HousekeepingLogUpdate, HousekeepingLogBase as HousekeepingLogBaseSchema,
@@ -27,11 +28,20 @@ from .pos import ( #noqa
     POSSale, POSSaleCreate, POSSaleUpdate, POSSaleVoid, POSSaleBase as POSSaleBaseSchema,
     POSSaleItem, POSSaleItemCreate, POSSaleItemBase as POSSaleItemBaseSchema,
     PaymentMethod as PaymentMethodSchema,
-    POSSaleStatus as POSSaleStatusSchema
+    POSSaleStatus as POSSaleStatusSchema,
+    RefreshTokenRequest # Added missing import from previous step
 )
 from .billing import ( #noqa
     GuestFolio, GuestFolioCreate, GuestFolioUpdate, GuestFolioBase as GuestFolioBaseSchema,
     FolioTransaction, FolioTransactionCreate, FolioTransactionBase as FolioTransactionBaseSchema,
     FolioStatus as FolioStatusSchema,
-    FolioTransactionType as FolioTransactionTypeSchema
+    FolioTransactionType as FolioTransactionTypeSchema,
+    FolioStatusUpdate # Added missing import from previous step
+)
+from .reports import ( #noqa
+    DailyOccupancyData, PeriodOccupancyData, RevPARData,
+    TotalSalesSummary, SalesByCategoryItem, SalesByProductCategoryReport,
+    InventorySummaryItem, InventorySummaryReport,
+    FolioFinancialSummary
+    # ReportMetricItem, ComplexReportSection # If using these more generic ones
 )

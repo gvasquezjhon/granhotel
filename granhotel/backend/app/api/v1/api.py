@@ -3,8 +3,8 @@ from app.api.v1.endpoints import (
     auth, users, rooms, guests, reservations,
     product_categories, products,
     suppliers, inventory_stock, purchase_orders,
-    housekeeping,
-    pos, billing # Add billing
+    housekeeping, billing,
+    reports # Add reports
 )
 
 api_router = APIRouter()
@@ -19,9 +19,10 @@ api_router.include_router(guests.router, prefix="/guests", tags=["Guests"])
 api_router.include_router(reservations.router, prefix="/reservations", tags=["Reservations"])
 api_router.include_router(housekeeping.router, prefix="/housekeeping", tags=["Housekeeping"])
 
-# Financial and Sales services
+# Financial, Sales, and Reporting services
 api_router.include_router(billing.router, prefix="/billing", tags=["Billing & Folios"])
 api_router.include_router(pos.router, prefix="/pos", tags=["Point of Sale"])
+api_router.include_router(reports.router, prefix="/reports", tags=["Reporting & Analytics"])
 
 # Product & Inventory services
 api_router.include_router(product_categories.router, prefix="/product-categories", tags=["Product Categories"])

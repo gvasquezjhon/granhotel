@@ -82,5 +82,14 @@ from .billing_service import ( #noqa
     get_folio_details,
     get_folios_for_guest,
     update_folio_status,
-    _recalculate_and_save_folio_totals # Exporting for potential direct use or testing, though typically internal
+    _recalculate_and_save_folio_totals
+)
+from .reporting_service import ( #noqa
+    get_daily_occupancy_data,
+    get_occupancy_rate_over_period,
+    get_revpar_over_period,
+    get_total_sales_by_period,
+    get_sales_by_product_category,
+    get_inventory_summary,
+    get_folio_financial_summary,
 )
