@@ -6,39 +6,59 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "8000:8000" # Backend API
     volumes:
-      - ./backend/app:/usr/src/app/app # Mount the app directory for live reloading
-      - ./backend/alembic:/usr/src/app/alembic
-      - ./backend/alembic.ini:/usr/src/app/alembic.ini
-      # If you have other top-level files in backend that app needs, mount them too
+      - ./backend:/usr/src/app
+      # For Alembic, ensure it can find alembic.ini and scripts
+      # If WORKDIR in backend Dockerfile is /usr/src/app, these should be fine.
     env_file:
-      - ./backend/.env # Load environment variables from .env file in backend
+      - ./backend/.env
     environment:
-      # DATABASE_URL is expected to be in the .env file
-      # Example: DATABASE_URL=postgresql://gran_hotel_user:strong_password@db/granhoteldb
-      PYTHONUNBUFFERED: 1 # Already in Dockerfile, but can be reinforced here
-      PYTHONDONTWRITEBYTECODE: 1 # Same as above
+      PYTHONUNBUFFERED: 1
+      PYTHONDONTWRITEBYTECODE: 1
     depends_on:
       db:
-        condition: service_healthy # Wait for db to be healthy before starting backend
+        condition: service_healthy
     networks:
       - granhotel_network
+
+  frontend: # New frontend service
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile # This Dockerfile is for production builds with Nginx
+                           # For dev, we override the command.
+      args:
+        # VITE_API_BASE_URL for production build can be set here if needed,
+        # but for dev, Vite uses its .env file.
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000/api/v1}
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+    env_file:
+      - ./frontend/.env # For Vite dev server to pick up VITE_API_BASE_URL
+    # Command to install dependencies (if not in volume) and run Vite dev server
+    # npm install will be fast after the first time due to the named volume.
+    command: sh -c "npm install && npm run dev -- --host"
+    networks:
+      - granhotel_network
+    depends_on:
+      - backend
 
   db:
     image: postgres:13-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-      # Optional: Mount init scripts for initial DB setup
-      # - ./backend/db/init-scripts:/docker-entrypoint-initdb.d
     ports:
-      - "5432:5432" # Expose PostgreSQL port to host (optional, for direct access)
+      - "5432:5432"
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-gran_hotel_user} # Use from .env or default
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-strong_password} # Use from .env or default
-      POSTGRES_DB: ${POSTGRES_DB:-granhoteldb} # Use from .env or default
+      POSTGRES_USER: ${POSTGRES_USER:-gran_hotel_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-strong_password}
+      POSTGRES_DB: ${POSTGRES_DB:-granhoteldb}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-gran_hotel_user} -d ${POSTGRES_DB:-granhoteldb}"]
+      # Use $$ to escape $ for docker-compose variable interpolation
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-gran_hotel_user} -d $${POSTGRES_DB:-granhoteldb}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -46,7 +66,8 @@ services:
       - granhotel_network
 
 volumes:
-  postgres_data: # Persists database data across container restarts
+  postgres_data:
+  frontend_node_modules: # Define the named volume
 
 networks:
   granhotel_network:
