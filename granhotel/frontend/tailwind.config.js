@@ -29,7 +29,16 @@ export default {
       },
       backgroundImage: theme => ({
         'gradient-theme': `linear-gradient(to right, ${theme('colors.brand-primary.DEFAULT')}, ${theme('colors.brand-accent.DEFAULT')})`,
-      })
+      }),
+      animation: { // Added animation
+        fadeIn: 'fadeIn 0.5s ease-in-out',
+      },
+      keyframes: { // Added keyframes
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+      },
     },
   },
   plugins: [],
